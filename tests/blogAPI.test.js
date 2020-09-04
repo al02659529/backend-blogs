@@ -14,7 +14,7 @@ beforeEach(async () =>{
     await User.deleteMany({})
 
     const passwordHash = await bcrypt.hash('Sekret123!', 10)
-    const user = new User({ username: 'root', passwordHash })
+    const user = new User({ username: 'root', name: 'Admin', passwordHash })
 
     await user.save()
 })
@@ -154,10 +154,9 @@ describe('/api/blogs API', () =>{
         const response = await api.post('/api/blogs').set('Authorization', "bearer " + token).send(newBlog)
         const blogsInDb = await api.get('/api/blogs')
         const usersInDB = await api.get('/api/users')
-
         expect(blogsInDb.body[blogsInDb.body.length - 1].user).toEqual(usersInDB.body[0].id)
 
-    })
+    }, 30000)
 
     test("verifies that if the likes property is missing from the request, it will default to the value 0", async () =>{
         const newBlog = {

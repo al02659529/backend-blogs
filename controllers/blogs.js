@@ -5,8 +5,24 @@ const jwt = require('jsonwebtoken')
 const middleware = require('../utils/middleware')
 
 
-blogsRouter.get('/',  async (request, response) =>{
+blogsRouter.get('/all',  async (request, response) =>{
     const blogs = await Blog.find({})
+    await response.json(blogs).end()
+} )
+blogsRouter.get('/',  async (request, response) =>{
+    const body = request.body
+    const tokenRequest = request.token
+    if (!tokenRequest){
+        return response.status(401).json({error: 'missing token'})
+    }
+    const decodedToken = jwt.verify(tokenRequest, process.env.SECRET)
+    if (!decodedToken.id){
+        return response.status(401).json({error: 'invalid token'})
+    }
+
+    console.log(decodedToken.id)
+    const blogs = await Blog.find({user: decodedToken.id}).exec();
+    console.log(blogs)
     await response.json(blogs).end()
 } )
 
@@ -34,7 +50,7 @@ blogsRouter.post('/', async (request, response, next) =>{
         author: body.author || null,
         url: body.url,
         likes: body.likes || 0,
-        user: user._id || null
+        user: user._id
     })
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
