@@ -17,10 +17,10 @@ usersRouter.post('/', async (request, response) =>{
     const validatePassword = passwordPattern.test(body.password)
 
     if (!validateUserName){
-        return response.status(400).json("Username must be between 3-15 characters (numbers or letters) and only - and _ as special characters are allowed").end()
+        return response.status(400).json({error: "Username must be between 3-15 characters (numbers or letters) and only - and _ as special characters are allowed"}).end()
     }
     if(!validatePassword){
-       return response.status(400).json("Password must contain a minimum eight characters, at least one upper case English letter, one lower case English letter, one number and one special character").end();
+       return response.status(400).json({error: "Password must contain a minimum eight characters, at least one upper case English letter, one lower case English letter, one number and one special character"}).end();
     }
 
     const saltRounds = 10
